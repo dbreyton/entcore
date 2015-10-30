@@ -165,7 +165,7 @@ public class ConversationServiceManager implements AppRegistryEventsService {
 	private void manageConversationNodes(Set<String> userIds, JsonArray modifiedUsers,
 			final Message<JsonObject> message) {
 		String filter = "";
-		JsonObject disableParams = new JsonObject().putBoolean("false", false);
+		JsonObject disableParams = new JsonObject().putBoolean("false", false).putString("application", applicationName);
 		if (modifiedUsers != null) {
 			filter = "AND c.userId IN {modifiedUsers} ";
 			disableParams.putArray("modifiedUsers", modifiedUsers);
@@ -186,8 +186,10 @@ public class ConversationServiceManager implements AppRegistryEventsService {
 				"WHERE c.userId IN ['" + Joiner.on("','").join(userIds) + "'] AND c.active <> {true} " +
 				"SET c.active = {true} ", new JsonObject().putBoolean("true", true))
 				.add(
-				"MATCH (c:Conversation) " +
+				"MATCH (c:Conversation), (a:Application {name : {application}}) " +
 				"WHERE NOT(c.userId IN ['" + Joiner.on("','").join(userIds) + "']) AND c.active <> {false} " + filter +
+				"AND NOT((c)<-[:HAS_CONVERSATION]-(:User)-[:IN]->(:Group)-[:AUTHORIZED]->(:Role)-[:AUTHORIZE]-(:Action)" +
+				"<-[:PROVIDE]-(a)) " +
 				"SET c.active = {false} ", disableParams);
 		Handler<Message<JsonObject>> h = null;
 		if (message != null) {
