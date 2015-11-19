@@ -220,8 +220,10 @@ public class ConversationServiceManager implements AppRegistryEventsService {
 						a.size() == 1 && a.get(0) != null) {
 					JsonObject j = a.get(0);
 					users.handle(j.getArray("users"));
-				} else {
+				} else if ("ok".equals(message.body().getString("status"))) {
 					users.handle(null);
+				} else {
+					users.handle(new JsonArray());
 				}
 			}
 		});
