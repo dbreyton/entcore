@@ -614,6 +614,11 @@ function AdminDirectoryController($scope, $rootScope, $http, $route, template, m
 			key: "Sacoche",
 			label: 'directory.admin.export.type.sacoche',
 			format: 'csv'
+		},
+		{
+			key: "Gepi",
+			label: 'directory.admin.export.type.gepi',
+			format: 'csv'
 		}
 	]
 	$scope.initExportData = function(){
